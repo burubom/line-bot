@@ -16,7 +16,7 @@ $targetMid = $setting['targetMid'];
 
 // verify
 $headerSig = '';
-foreach (getallheaders() as $name => $value) {
+foreach (apache_response_headers() as $name => $value) {
 //     echo "$name: $value\n";
     if ($name == 'X-Line-Signature') $headerSig = $value;
 }
