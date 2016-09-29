@@ -15,7 +15,7 @@ $channelMid = $setting['channelMid'];
 $targetMid = $setting['targetMid'];
 
 // verify
-$headerSig = $_SERVER['X-Line-Signature'];
+$headerSig = $_SERVER['HTTP_X-Line-Signature'];
 $reqbody = file_get_contents('php://input');
 $sig = base64_encode(hash_hmac('sha256', $reqbody , $channelSecret));
 
