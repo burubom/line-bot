@@ -27,6 +27,7 @@ $jsonStr = file_get_contents('php://input');
 $sig = base64_encode(hash_hmac('sha256', $jsonStr , $channelSecret));
 error_log('headerSig='.$headerSig);
 error_log('sig='.$sig);
+error_log('json='.$jsonStr);
 $jsonArr = json_decode($jsonStr, true);
 
 switch ($jsonArr['type']) {
