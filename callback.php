@@ -14,16 +14,32 @@ $channelSecret = $setting['channelSecret'];
 $channelMid = $setting['channelMid'];
 $targetMid = $setting['targetMid'];
 
-// verify
-$headerSig = $_SERVER['HTTP_X-Line-Signature'];
-$reqbody = file_get_contents('php://input');
-$sig = base64_encode(hash_hmac('sha256', $reqbody , $channelSecret));
-
 $config = [
     'channelId' => $channelId,
     'channelSecret' => $channelSecret,
     'channelMid' => $channelMid,
 ];
 $sdk = new LINEBot($config, new GuzzleHTTPClient($config));
-// Send a text message
-$sdk->sendText("u066c3355d1192628c7e8b05b0521c58c", 'hello!');
+
+// verify
+$headers = getallheaders();
+$headerSig = $headers['X-Line-Signature'];
+$jsonStr = file_get_contents('php://input');
+$sig = base64_encode(hash_hmac('sha256', $jsonStr , $channelSecret));
+$jsonArr = json_decode($jsonStr, true);
+var_dump($jsonArr);
+
+switch ($jsonArr['type']) {
+    case 'follow':
+    	$targetMid = $jsonArr['source']['userId'];
+        error_log('followed by MID='.$targetMid);
+        $replyToken = $jsonArr['replyToken'];
+        
+        //$sdk->sendText($targetMid, 'hello!');
+        break;
+    case 'unfollow':
+    	$targetMid = $jsonArr['source']['userId'];
+        error_log('unfollowed by MID='.$targetMid);
+        exit;
+        break;
+}
