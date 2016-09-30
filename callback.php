@@ -27,19 +27,18 @@ $jsonStr = file_get_contents('php://input');
 $sig = base64_encode(hash_hmac('sha256', $jsonStr , $channelSecret));
 error_log('headerSig='.$headerSig);
 error_log('sig='.$sig);
-error_log('json='.$jsonStr);
 $jsonArr = json_decode($jsonStr, true);
 
-switch ($jsonArr['type']) {
+switch ($jsonArr['events']['type']) {
     case 'follow':
-    	$targetMid = $jsonArr['source']['userId'];
+    	$targetMid = $jsonArr['events']['source']['userId'];
         error_log('followed by MID='.$targetMid);
-        $replyToken = $jsonArr['replyToken'];
+        $replyToken = $jsonArr['events']['replyToken'];
         
-        //$sdk->sendText($targetMid, 'hello!');
+        $sdk->sendText($targetMid, 'hello!');
         break;
     case 'unfollow':
-    	$targetMid = $jsonArr['source']['userId'];
+    	$targetMid = $jsonArr['events']['source']['userId'];
         error_log('unfollowed by MID='.$targetMid);
         exit;
         break;
