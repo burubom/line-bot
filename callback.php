@@ -13,6 +13,7 @@ $channelId = $setting['channelId'];
 $channelSecret = $setting['channelSecret'];
 $channelMid = $setting['channelMid'];
 $targetMid = $setting['targetMid'];
+$token = $setting['token'];
 
 $config = [
     'channelId' => $channelId,
@@ -36,11 +37,34 @@ switch ($event['type']) {
         error_log('followed by MID='.$targetMid);
         $replyToken = $event['replyToken'];
         
-        $sdk->sendText($targetMid, 'hello!');
+//         $ret = $sdk->sendText($targetMid, 'hello! mid=' . $targetMid);
+//         error_log(print_r($ret,true));
+        pushMsg($token, $targetMid, 'hello! mid=' . $targetMid);
         break;
     case 'unfollow':
     	$targetMid = $event['source']['userId'];
         error_log('unfollowed by MID='.$targetMid);
         exit;
         break;
+}
+
+function pushMsg($token, $targetMid, $text) {
+$data = array(
+    'to' => $targetMid,
+    'messages' => array(
+        array ( 'type'  => 'text',
+        'text'  => $text),
+    ),
+);                                                                  
+$data_string = json_encode($data);                                                                                                                                                                                                      
+$ch = curl_init('https://api.line.me/v2/bot/message/push');                                                                      
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+    'Content-Type: application/json',      
+    'Authorization: Bearer '.$token,)                                                                       
+);
+	$result = curl_exec($ch); 
+    error_log('Res='.$result);
 }
