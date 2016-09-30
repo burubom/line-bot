@@ -1,8 +1,10 @@
 <?php
 use LINE\LINEBot;
-use LINE\LINEBot\HTTPClient\GuzzleHTTPClient;
+use LINE\LINEBot\Constant\HTTPHeader;
+use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\Message\MultipleMessages;
 use LINE\LINEBot\Message\RichMessage\Markup;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
 require_once __DIR__.'/vendor/autoload.php';
 
@@ -15,57 +17,11 @@ $channelMid = $setting['channelMid'];
 $targetMid = $setting['targetMid'];
 $token = $setting['token'];
 
-$config = [
-    'channelId' => $channelId,
-    'channelSecret' => $channelSecret,
-    'channelMid' => $channelMid,
-];
-$sdk = new LINEBot($config, new GuzzleHTTPClient($config));
+$httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($token);
+$bot = new \LINE\LINEBot($httpClient, ['channelSecret' => $channelSecret]);
+$signature = $_SERVER['HTTP_X_LINE_SIGNATURE'];
+$body = file_get_contents('php://input');
+// $events = $bot->parseEventRequest($body, $signature);
 
-// verify
-$headerSig = $_SERVER['HTTP_X_LINE_SIGNATURE'];
-$jsonStr = file_get_contents('php://input');
-$sig = base64_encode(hash_hmac('sha256', $jsonStr , $channelSecret));
-error_log('headerSig='.$headerSig);
-error_log('sig='.$sig);
-$jsonArr = json_decode($jsonStr, true);
-
-$event = $jsonArr['events'][0];
-switch ($event['type']) {
-    case 'follow':
-    	$targetMid = $event['source']['userId'];
-        error_log('followed by MID='.$targetMid);
-        $replyToken = $event['replyToken'];
-        
-//         $ret = $sdk->sendText($targetMid, 'hello! mid=' . $targetMid);
-//         error_log(print_r($ret,true));
-        pushMsg($token, $targetMid, 'hello! mid=' . $targetMid);
-        break;
-    case 'unfollow':
-    	$targetMid = $event['source']['userId'];
-        error_log('unfollowed by MID='.$targetMid);
-        exit;
-        break;
-}
-
-function pushMsg($token, $targetMid, $text) {
-$data = array(
-    'to' => $targetMid,
-    'messages' => array(
-        array ( 'type'  => 'text',
-        'text'  => $text),
-    ),
-);                                                                  
-$data_string = json_encode($data);                                                                                                                                                                                                      
-$ch = curl_init('https://api.line.me/v2/bot/message/push');                                                                      
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");  
-curl_setopt($ch, CURLOPT_PROXY, $FIXIE_URL);                                                                   
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
-curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-    'Content-Type: application/json',      
-    'Authorization: Bearer '.$token,)                                                                       
-);
-	$result = curl_exec($ch); 
-    error_log('Res='.$result);
-}
+$ret = $bot->pushMessage('U921d0a6fa97a5dffe892ce106e7ad45d', new TextMessageBuilder('test text1', 'test text2', 'test text3'));
+var_dump($ret);
