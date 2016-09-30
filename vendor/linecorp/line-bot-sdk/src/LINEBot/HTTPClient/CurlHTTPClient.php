@@ -93,11 +93,13 @@ class CurlHTTPClient implements HTTPClient
             CURLOPT_HEADER => false,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_BINARYTRANSFER => true,
-            CURLOPT_PROXY => getenv('FIXIE_URL'),
         ];
 
         if ($method === 'POST' && !empty($reqBody)) {
             $options[CURLOPT_POSTFIELDS] = json_encode($reqBody);
+        }
+        if (getenv('FIXIE_URL')) {
+            $options[CURLOPT_PROXY] = getenv('FIXIE_URL');
         }
 
         $curl->setoptArray($options);
