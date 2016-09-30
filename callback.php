@@ -22,12 +22,12 @@ $config = [
 $sdk = new LINEBot($config, new GuzzleHTTPClient($config));
 
 // verify
-$headers = getallheaders();
-$headerSig = $headers['X-Line-Signature'];
+$headerSig = $_SERVER['HTTP_X_LINE_SIGNATURE'];
 $jsonStr = file_get_contents('php://input');
 $sig = base64_encode(hash_hmac('sha256', $jsonStr , $channelSecret));
+error_log('headerSig='.$headerSig);
+error_log('sig='.$sig);
 $jsonArr = json_decode($jsonStr, true);
-var_dump($jsonArr);
 
 switch ($jsonArr['type']) {
     case 'follow':
