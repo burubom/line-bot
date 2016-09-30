@@ -58,7 +58,8 @@ $data = array(
 );                                                                  
 $data_string = json_encode($data);                                                                                                                                                                                                      
 $ch = curl_init('https://api.line.me/v2/bot/message/push');                                                                      
-curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");  
+curl_setopt($ch, CURLOPT_PROXY, $FIXIE_URL);                                                                   
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
