@@ -29,16 +29,17 @@ error_log('headerSig='.$headerSig);
 error_log('sig='.$sig);
 $jsonArr = json_decode($jsonStr, true);
 
-switch ($jsonArr['events']['type']) {
+$event = $jsonArr['events'][0];
+switch ($event['type']) {
     case 'follow':
-    	$targetMid = $jsonArr['events']['source']['userId'];
+    	$targetMid = $event['source']['userId'];
         error_log('followed by MID='.$targetMid);
-        $replyToken = $jsonArr['events']['replyToken'];
+        $replyToken = $event['replyToken'];
         
         $sdk->sendText($targetMid, 'hello!');
         break;
     case 'unfollow':
-    	$targetMid = $jsonArr['events']['source']['userId'];
+    	$targetMid = $event['source']['userId'];
         error_log('unfollowed by MID='.$targetMid);
         exit;
         break;
