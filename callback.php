@@ -39,9 +39,7 @@ function pushMsg($token, $targetMid, $text) {
  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
  curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
- curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
- curl_setopt($ch, CURLOPT_PROXY,  getenv('FIXIE_URL'));  
- curl_setopt($ch, CURLOPT_PROXYPORT, 80);                                    
+ curl_setopt($ch, CURLOPT_PROXY,  getenv('FIXIE_URL'));                      
  curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
      'Content-Type: application/json',      
      'Authorization: Bearer '.$token,)                                                                       
